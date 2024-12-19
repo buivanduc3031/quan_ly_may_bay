@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Ghế</title>
+    <style>
+        .seat-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .seat {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            text-align: center;
+            line-height: 60px;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .available {
+            background-color: #28a745;
+            color: white;
+        }
+        .booked {
+            background-color: #dc3545;
+            color: white;
+        }
+        .seat-number {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Chọn Ghế</h2>
+    <div class="seat-container">
+        {% for i in range(0, seats|length, 3) %}
+            <div class="seat-row">
+                {% for seat in seats[i:i+3] %}
+                    <div class="seat {{ 'booked' if seat.is_booked else 'available' }}" data-seat-id="{{ seat.seat_id }}" data-flight-id="{{ seat.flight_id }}">
+                        <div class="seat-number">{{ seat.seat_number }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+<script>
+    document.querySelectorAll('.seat.available').forEach(seat => {
+        seat.addEventListener('click', function() {
+            const seatId = seat.getAttribute('data-seat-id');
+            const flightId = seat.getAttribute('data-flight-id');
+
+            fetch('/book_seat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ seat_id: seatId, flight_id: flightId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    seat.classList.remove('available');
+                    seat.classList.add('booked');
+                    alert('Ghế đã được đặt!');
+                } else {
+                    alert('Đặt ghế thất bại!');
+                }
+            });
+        });
+    });
+</script>
+
+</html>

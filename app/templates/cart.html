@@ -1,0 +1,54 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h1 class="text-center text-success mt-1">GIỎ HÀNG</h1>
+
+{% if 'cart' in session %}
+<table class="table">
+    <thead>
+    <tr>
+        <th>Flight ID</th>
+        <th>Airline</th>
+        <th>Departure</th>
+        <th>Arrival</th>
+        <th>Day</th>
+        <th>Type Ticket</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for c in session['cart'].values() %}
+    <tr>
+        <td>{{ c.flight_id }}</td>
+        <td>{{ c.plane_name }}</td>
+        <td>{{ c.departure }}</td>
+        <td>{{ c.arrival }}</td>
+        <td>{{ c.day }}</td>
+        <td>{{ c.type_ticket }}</td>
+        <td>{{ "{:,.0f}".format(c.price | float) }} VNĐ</td>
+        <td>
+            <input type="number" value="{{ c.quantity }}" class="form-control"/>
+        </td>
+        <td>
+            <button class="btn btn-danger">&times;</button>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="alert alert-info">
+    <h3>Tổng tiền: {{ cart_stats.total_price }} VNĐ</h3>
+    <h3>Tổng số lượng: {{ cart_stats.total_quantity }}</h3>
+</div>
+
+<div class="mt-1">
+    <button class="btn btn-success">Thanh toán</button>
+</div>
+{% else %}
+<div class="alert alert-info mt-1">Không có chuyến bay trong giỏ!</div>
+{% endif %}
+
+{% endblock %}
